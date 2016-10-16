@@ -22,7 +22,10 @@ else:
 
 class FormParser(HTMLParser):
     def __init__(self):
-        super(FormParser).__init__()
+        if py3: 
+           super(FormParser).__init__()
+        else:
+           HTMLParser.__init__(self)
         self.url = None
         self.params = {}
         self.in_form = False
