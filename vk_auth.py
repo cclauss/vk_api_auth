@@ -1,15 +1,28 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import cookielib
-import urllib2
-import urllib
-from urlparse import urlparse
-from HTMLParser import HTMLParser
+import sys
+py3 = sys.version_info[0] == 3
+
+if py3:
+   import http.cookiejar
+   import urllib.parse as urlparse
+   from urllib.request import build_opener
+   from urllib.request import HTTPCookieProcessor
+   from urllib.request import HTTPRedirectHandler
+   from html.parser import HTMLParser
+else:
+   import cookielib
+   from urllib2 import build_opener
+   from urllib2 import HTTPCookieProcessor
+   from urllib2 import HTTPRedirectHandler
+   import urllib
+   from urlparse import urlparse
+   from HTMLParser import HTMLParser
 
 class FormParser(HTMLParser):
     def __init__(self):
-        HTMLParser.__init__(self)
+        super(FormParser).__init__()
         self.url = None
         self.params = {}
         self.in_form = False
@@ -86,9 +99,9 @@ def auth(email, password, client_id, scope):
 
     if not isinstance(scope, list):
         scope = [scope]
-    opener = urllib2.build_opener(
-        urllib2.HTTPCookieProcessor(cookielib.CookieJar()),
-        urllib2.HTTPRedirectHandler())
+    opener = build_opener(
+        HTTPCookieProcessor(cookielib.CookieJar()),
+        HTTPRedirectHandler())
     doc, url = auth_user(email, password, client_id, scope, opener)
     if urlparse(url).path != "/blank.html":
         # Need to give access to requested scope
